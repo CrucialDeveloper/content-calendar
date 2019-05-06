@@ -41,7 +41,7 @@ class GetUsers extends Command
         $users = User::all();
 
         $users->each(function ($user) {
-            echo $user->id . '. ' . $user->first_name . ' ' . $user->last_name . ' / ' . $user->email;
+            echo $user->id . '. ' . $user->first_name . ' ' . $user->last_name . ' / ' . $user->email . "\n";
         });
     }
 }
