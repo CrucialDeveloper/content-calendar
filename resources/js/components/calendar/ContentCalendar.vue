@@ -7,12 +7,12 @@
                <button class="h-10 w-10 text-blue-500 fill-current focus:outline-none" @click="openCreateModal">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 9V5H9v4H5v2h4v4h2v-4h4V9h-4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20z"/></svg>
             </button>
-        </div> 
+        </div>
         <div class="flex items-center flex-wrap">
             <button class="flex items-center mx-4 p-2 rounded focus:outline-none" :class="unit.name === filter ? 'bg-gray-500' : ''" v-for="unit in businessunits" @click="setFilter(unit.name)">
                 <span class="mr-2" v-text="unit.name"></span>
                 <span class="w-8 h-4 rounded" :style="{background:unit.color}"></span>
-            </button>                
+            </button>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
     import dayGridPlugin from '@fullcalendar/daygrid'
     import '@fullcalendar/core/main.css';
     import '@fullcalendar/daygrid/main.css';
-    import CreateProjectModal from '../projects/CreateProjectModal.vue' 
+    import CreateProjectModal from '../projects/CreateProjectModal.vue'
     import EditProjectModal from '../projects/EditProjectModal.vue'
 
     export default {
@@ -60,7 +60,7 @@
             },
             openEvent: function (e) {
                 let form = this.projects.filter(function(unit) {
-                    return unit.title === e.event.title
+                    return unit.title === e.event.extendedProps.originaltitle
                 })[0]
 
                 this.$modal.show('edit-project-modal', {form})
@@ -73,27 +73,44 @@
                 }
             },
             openCreateModal: function() {
-               this.$modal.show('create-project-modal') 
-           }
-       },
-       computed: {
-        events: function() {
-            let vm = this
-            let items = this.projects 
-            if(this.filter) {
-                items = this.projects.filter(function(project) {
-                    return project.business_unit === vm.filter
+                this.$modal.show('create-project-modal')
+            },
+            getInitials: function(name) {
+                let names = name.split(' ')
+                return names[0][0].toUpperCase() + names[1][0].toUpperCase()
+            }
+        },
+        computed: {
+            events: function() {
+                let vm = this
+                let items = this.projects
+                if(this.filter) {
+                    items = this.projects.filter(function(project) {
+                        return project.business_unit === vm.filter
+                    })
+                }
+
+                return items.map(function(project) {
+                    return {
+                        title: vm.getInitials(project.owner) + ' / ' + project.business_unit + ' - ' + project.title ,
+                        originaltitle:project.title,
+                        date:project.publish_date,
+                        color:vm.getColor(project)
+                    }
                 })
             }
-
-            return items.map(function(project) {
-                return {
-                    title:project.title,
-                    date:project.publish_date, 
-                    color:vm.getColor(project)
-                }
-            })
         }
     }
-}
 </script>
+
+
+<style>
+.fc-day-grid-event .fc-content{
+    /*white-space:normal !important;*/
+}
+
+.fc-day-grid-event {
+    margin-bottom: 4px;
+    margin-top:4px;
+}
+</style>
