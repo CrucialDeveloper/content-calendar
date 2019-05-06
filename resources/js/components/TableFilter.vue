@@ -13,14 +13,27 @@
           <option :value=100>100</option>
         </select>
       </div>
-      <div class="border-2 p-2 flex items-center rounded w-64">
-        <span class="text-gray-900 fill-current h-4 w-4 font-bold mr-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg> 
-        </span>
-        <input class="text-gray-900 w-full focus:outline-none" type="text" v-model="search" placeholder="Search ...">
-        <button class="text-gray-900 fill-current h-4 w-4 focus:outline-none" @click="search = ''">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
-        </button>
+      <div class="flex items-center">
+        <div class="border-2 p-2 flex items-center rounded w-64 mr-4">
+          <span class="text-gray-900 fill-current h-4 w-4 font-bold mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/></svg>
+          </span>
+          <input class="text-gray-900 w-full focus:outline-none" type="text" v-model="search" placeholder="Search ...">
+          <button class="text-gray-900 fill-current h-4 w-4 focus:outline-none" @click="search = ''">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"/></svg>
+          </button>
+        </div>
+        <div>
+          <data-export :data="exportData" name="ContentCalender.csv">
+            <button class="bg-gray-300 p-2 rounded flex items-center">
+              <div class="h-4 w-4 text-gray-900 fill-current mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
+              </div>
+              <span>Export</span>
+            </button>
+
+          </data-export>
+        </div>
       </div>
     </div>
 
@@ -79,16 +92,19 @@
 <script>
 
   import moment from 'moment'
+  import DataExport from 'vue-json-csv'
 
   export default {
     props:['keys', 'form-data', 'forms'],
+    components: {DataExport},
     data() {
       return {
         perPage:5,
         items: this.forms,
         currentPage: 1,
         sortBy:{},
-        search:''
+        search:'',
+        exportData:[this.formdata]
       }
     },
     computed: {
@@ -117,6 +133,8 @@
         } else {
           sorted = searched
         }
+
+        this.exportData = sorted
 
         return sorted.filter(function(item, index){
           return index>= vm.currentPage * vm.perPage - vm.perPage && index<=vm.perPage *vm.currentPage -1
